@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-deep: #063f43;
+  --color-teal: #0a7a7f;
+  --color-leaf: #4b7029;
+  --color-aqua: #17b3a6;
+  --color-clay: #c4843f;
+  --color-paper: #f8f8ee;
+  --color-ink: #14302f;
+  --color-mute: #5b7170;
+  --color-line: #dce2d2;
+  --color-alert: #9b2c2c;
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+}
+
+body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-sans); }
+h1, h2, h3 { letter-spacing: -0.015em; }
+.num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--color-teal); outline-offset: 2px; }
+
+.field { width: 100%; border: 1px solid var(--color-line); background: #fff; border-radius: 6px; padding: 0.55rem 0.7rem; font-size: 0.925rem; }
+.field:focus { border-color: var(--color-teal); }
+.label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--color-mute); margin-bottom: 0.25rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; border-radius: 6px; padding: 0.55rem 1rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background-color .15s; }
+.btn-primary { background: var(--color-teal); color: #fff; }
+.btn-primary:hover { background: var(--color-deep); }
+.btn-ghost { border: 1px solid var(--color-line); background: #fff; color: var(--color-ink); }
+.btn-ghost:hover { background: #eef2e4; }
+.btn-danger { background: var(--color-alert); color: #fff; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
