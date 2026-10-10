@@ -24,7 +24,7 @@ export default async function PrintPo({ params }: { params: Promise<{ id: string
   ]);
   const ids = (approvals.data ?? []).map((a: any) => a.approver_id).filter(Boolean);
   const { data: people } = ids.length ? await supabase.from('profiles').select('id, full_name').in('id', ids) : { data: [] };
-  const who = new Map((people ?? []).map((p: any) => [p.id, p.full_name]));
+  const who = new Map((people ?? []).map((p: any) => [p.id, p.full_name] as [string, any]));
 
   const h = await headers();
   const host = h.get('x-forwarded-host') ?? h.get('host');
