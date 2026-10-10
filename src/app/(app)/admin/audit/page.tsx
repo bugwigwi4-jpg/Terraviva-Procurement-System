@@ -22,7 +22,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   const rows = data ?? [];
   const actorIds = [...new Set(rows.map((r: any) => r.actor_id).filter(Boolean))];
   const { data: people } = actorIds.length ? await supabase.from('profiles').select('id, full_name, email').in('id', actorIds) : { data: [] };
-  const name = new Map((people ?? []).map((p: any) => [p.id, p.full_name ?? p.email]));
+  const name = new Map((people ?? []).map((p: any) => [p.id, p.full_name ?? p.email] as [string, any]));
 
   return (
     <>
