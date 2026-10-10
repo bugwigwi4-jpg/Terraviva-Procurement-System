@@ -36,7 +36,7 @@ export default async function RfqDetail({ params }: { params: Promise<{ id: stri
   const open = ['draft', 'published'].includes(rfq.status);
   const evaluating = ['closed', 'evaluated'].includes(rfq.status);
   const rank = ranking.data ?? [];
-  const qd = new Map((quotes.data ?? []).map((q: any) => [q.id, q]));
+  const qd = new Map((quotes.data ?? []).map((q: any) => [q.id, q] as [string, any]));
   const lowest = rank.length ? Math.min(...rank.filter((r: any) => r.currency === rank[0].currency).map((r: any) => Number(r.total_amount))) : 0;
   const invitedIds = (invites.data ?? []).map((i: any) => i.supplier_id);
   const quotedIds = rank.map((r: any) => r.supplier_id);
