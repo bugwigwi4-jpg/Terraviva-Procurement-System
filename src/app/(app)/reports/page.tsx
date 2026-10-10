@@ -35,11 +35,11 @@ export default async function ReportsPage() {
     supabase.from('v_supplier_performance').select('*').gt('evaluations', 0).order('avg_quality', { ascending: false }),
     supabase.from('v_budget_utilization').select('*'),
   ]);
-  const pn = new Map((programs.data ?? []).map((p: any) => [p.id, p.name]));
-  const sn = new Map((suppliers.data ?? []).map((s: any) => [s.id, s.name]));
+  const pn = new Map((programs.data ?? []).map((p: any) => [p.id, p.name] as [string, any]));
+  const sn = new Map((suppliers.data ?? []).map((s: any) => [s.id, s.name] as [string, any]));
   const orders = pos.data ?? [];
-  const byProgram = group(orders, (r) => r.program_id, (id) => (id ? pn.get(id) ?? 'Unknown' : 'No program'));
-  const bySupplier = group(orders, (r) => r.supplier_id, (id) => (id ? sn.get(id) ?? 'Unknown' : '-')).slice(0, 15);
+  const byProgram = group(orders, (r) => r.program_id, (id) => (id ? String(pn.get(id) ?? 'Unknown') : 'No program'));
+  const bySupplier = group(orders, (r) => r.supplier_id, (id) => (id ? String(sn.get(id) ?? 'Unknown') : '-')).slice(0, 15);
   const byStatus = new Map<string, number>();
   orders.forEach((o: any) => byStatus.set(o.status, (byStatus.get(o.status) ?? 0) + 1));
 
