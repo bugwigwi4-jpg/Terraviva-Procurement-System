@@ -33,7 +33,7 @@ export default function NewSupplierPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(null);
-    const payload = Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v.trim() === '' ? null : v.trim()]));
+    const payload = Object.fromEntries(Object.entries(values).map(([k, v]) => [k, String(v).trim() === '' ? null : String(v).trim()]));
     const { data, error: err } = await supabase.from('suppliers').insert(payload).select('id').single();
     if (err || !data) {
       setError(err?.message.includes('suppliers_tin_key') ? 'A supplier with this TIN already exists.' : err?.message ?? 'Could not save.');
