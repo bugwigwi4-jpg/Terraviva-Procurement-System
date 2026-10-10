@@ -7,7 +7,7 @@ import type { AttachmentCategory } from '@/lib/constants';
 type Row = {
   id: string; category: string; storage_path: string; file_name: string;
   mime_type: string | null; size_bytes: number | null; description: string | null;
-  created_at: string; url?: string;
+  created_at: string; url?: string | null;
 };
 
 const MAX_BYTES = 25 * 1024 * 1024;
@@ -112,7 +112,7 @@ export default function Attachments({
                 {r.url && mime.startsWith('video/') && <video src={r.url} controls preload="metadata" className="h-36 w-full bg-black" />}
                 {r.url && mime.startsWith('audio/') && <audio src={r.url} controls className="mt-3 w-full px-2" />}
                 <div className="p-3 text-sm">
-                  <a href={r.url} target="_blank" rel="noreferrer" className="block truncate font-semibold text-teal hover:underline">{r.file_name}</a>
+                  <a href={r.url ?? undefined} target="_blank" rel="noreferrer" className="block truncate font-semibold text-teal hover:underline">{r.file_name}</a>
                   <p className="mt-0.5 text-xs text-mute">
                     {catLabel(r.category)} · {formatBytes(r.size_bytes)} · {formatDate(r.created_at)}
                   </p>
