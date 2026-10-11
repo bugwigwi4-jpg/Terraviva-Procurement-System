@@ -32,11 +32,13 @@ export default function SignupPage() {
   if (done) {
     return (
       <AuthShell title="Check your email">
-        <p className="text-sm">We sent a confirmation link to <strong>{email}</strong>. Open it to verify your address.</p>
-        <p className="text-sm text-mute">
-          After that, an administrator must activate your account and assign your role before you can see any data.
-        </p>
-        <Link href="/login" className="btn btn-ghost">Back to sign in</Link>
+        <div className="space-y-4 text-center">
+          <p className="text-sm">We sent a confirmation link to <strong>{email}</strong>. Open it to verify your address.</p>
+          <p className="text-sm text-mute">
+            After that, an administrator must activate your account and assign your role before you can see any data.
+          </p>
+          <Link href="/login" className="btn btn-ghost">Back to sign in</Link>
+        </div>
       </AuthShell>
     );
   }
@@ -57,7 +59,7 @@ export default function SignupPage() {
         {error && <p role="alert" className="text-sm text-alert">{error}</p>}
         <button className="btn btn-primary w-full" disabled={busy}>{busy ? 'Creating account...' : 'Create account'}</button>
       </form>
-      <p className="text-sm text-mute">
+      <p className="text-center text-sm text-mute">
         Already have an account? <Link href="/login" className="font-semibold text-teal hover:underline">Sign in</Link>
       </p>
     </AuthShell>
