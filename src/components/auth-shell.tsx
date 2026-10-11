@@ -4,7 +4,7 @@ export default function AuthShell({ title, subtitle, children }: { title: string
       <section className="flex flex-col justify-between bg-deep p-8 text-white lg:p-14">
         <div className="w-40 overflow-hidden rounded-2xl bg-paper p-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/terraviva-logo.png" alt="Terraviva" width={160} height={160} className="h-auto w-full" />
+          <img src="/terraviva-logo.svg" alt="Terraviva" width={160} height={160} className="h-auto w-full" />
         </div>
         <div className="my-12 max-w-lg">
           <h1 className="text-4xl font-bold leading-tight">Every purchase should leave the land better than it found it.</h1>
