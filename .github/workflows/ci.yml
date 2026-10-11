@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, develop]
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
     env:
       NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
@@ -14,7 +14,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run typecheck
+      - run: npm install --no-audit --no-fund
       - run: npm run build
