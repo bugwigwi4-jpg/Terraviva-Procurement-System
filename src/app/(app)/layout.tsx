@@ -11,7 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const logo = (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src="/terraviva-logo.png" alt="Terraviva" width={112} height={112} className="h-auto w-full" />
+    <img src="/terraviva-logo.svg" alt="Terraviva" width={112} height={112} className="h-auto w-full" />
   );
 
   if (!ctx.profile?.is_active) {
