@@ -24,8 +24,10 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <AuthShell title="Check your email">
-        <p className="text-sm">If an account exists for <strong>{email}</strong>, a reset link is on its way. The link expires after a short time.</p>
-        <Link href="/login" className="btn btn-ghost">Back to sign in</Link>
+        <div className="space-y-4 text-center">
+          <p className="text-sm">If an account exists for <strong>{email}</strong>, a reset link is on its way. The link expires after a short time.</p>
+          <Link href="/login" className="btn btn-ghost">Back to sign in</Link>
+        </div>
       </AuthShell>
     );
   }
@@ -40,7 +42,7 @@ export default function ForgotPasswordPage() {
         {error && <p role="alert" className="text-sm text-alert">{error}</p>}
         <button className="btn btn-primary w-full" disabled={busy}>{busy ? 'Sending...' : 'Send reset link'}</button>
       </form>
-      <Link href="/login" className="text-sm font-semibold text-teal hover:underline">Back to sign in</Link>
+      <p className="text-center"><Link href="/login" className="text-sm font-semibold text-teal hover:underline">Back to sign in</Link></p>
     </AuthShell>
   );
 }
