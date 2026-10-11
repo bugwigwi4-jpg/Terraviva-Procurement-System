@@ -16,7 +16,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ number:
     <main className="flex min-h-screen items-center justify-center p-6">
       <div className="w-full max-w-md rounded-lg border border-line bg-white p-8 text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/terraviva-logo.png" alt="Terraviva" width={96} height={96} className="mx-auto mb-4 h-24 w-24" />
+        <img src="/terraviva-logo.svg" alt="Terraviva" width={96} height={96} className="mx-auto mb-4 h-24 w-24" />
         {doc ? (
           <>
             <h1 className={`text-xl font-bold ${valid ? 'text-leaf' : 'text-alert'}`}>
