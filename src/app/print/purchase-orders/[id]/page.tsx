@@ -56,7 +56,7 @@ export default async function PrintPo({ params }: { params: Promise<{ id: string
       <header className="flex items-start justify-between border-b-2 border-teal pb-4">
         <div className="flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/terraviva-logo.png" alt="Terraviva" width={90} height={90} className="h-[90px] w-[90px]" />
+          <img src="/terraviva-logo.svg" alt="Terraviva" width={90} height={90} className="h-[90px] w-[90px]" />
           <div>
             <p className="text-xl font-bold text-teal">{o.name ?? 'Terraviva'}</p>
             <p>{o.address}</p>
