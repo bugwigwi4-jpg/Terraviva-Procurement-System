@@ -34,13 +34,13 @@ export default function LoginPage() {
           <input id="email" type="email" required autoComplete="email" className="field" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <PasswordInput id="password" label="Password" value={password} onChange={setPassword} />
-        <div className="text-right">
+        <div className="text-center">
           <Link href="/forgot-password" className="text-sm font-semibold text-teal hover:underline">Forgot password?</Link>
         </div>
         {error && <p role="alert" className="text-sm text-alert">{error}</p>}
         <button className="btn btn-primary w-full" disabled={busy}>{busy ? 'Signing in...' : 'Sign in'}</button>
       </form>
-      <p className="text-sm text-mute">
+      <p className="text-center text-sm text-mute">
         New to Terraviva? <Link href="/signup" className="font-semibold text-teal hover:underline">Create an account</Link>
       </p>
     </AuthShell>
