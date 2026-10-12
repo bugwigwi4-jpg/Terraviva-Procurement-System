@@ -17,6 +17,7 @@ export default async function PlanPage() {
       <PageHeader title="Annual procurement plan" subtitle="Plan what you will buy and when. Requisitions can be linked back to a plan line." />
       <ResourceManager
         table="procurement_plan_items" noun="plan line" rows={plan.data ?? []} canDelete
+        attachments={{ entityType: 'plan_item', categories: [{ value: 'specification', label: 'Specification or plan document' }, { value: 'general', label: 'Other document' }] }}
         canEdit={can(ctx.roles, 'procurement') || can(ctx.roles, 'programs')}
         fields={[
           { key: 'fiscal_year', label: 'Year', type: 'number', required: true, defaultValue: String(new Date().getFullYear()) },
