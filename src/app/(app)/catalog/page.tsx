@@ -18,6 +18,7 @@ export default async function CatalogPage() {
       <PageHeader title="Item catalogue" subtitle="Items people can pick when they raise a requisition, with reference prices." />
       <ResourceManager
         table="items" noun="item" rows={items.data ?? []} canEdit canDelete
+        attachments={{ entityType: 'item', categories: [{ value: 'photo', label: 'Item photo' }, { value: 'specification', label: 'Specification sheet' }] }}
         fields={[
           { key: 'name', label: 'Name', required: true },
           { key: 'category_id', label: 'Category', type: 'select', options: toOptions(cats.data) },
