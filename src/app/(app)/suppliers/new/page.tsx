@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/page-header';
 import { createClient } from '@/lib/supabase/client';
-import { REGIONS } from '@/lib/constants';
 
 const FIELDS: { key: string; label: string; type?: string; required?: boolean }[] = [
   { key: 'name', label: 'Business name', required: true },
@@ -26,7 +25,7 @@ const FIELDS: { key: string; label: string; type?: string; required?: boolean }[
 export default function NewSupplierPage() {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
-  const [values, setValues] = useState<Record<string, string>>({ region: 'Mwanza' });
+  const [values, setValues] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -57,9 +56,8 @@ export default function NewSupplierPage() {
           ))}
           <div>
             <label htmlFor="region" className="label">Region</label>
-            <select id="region" className="field" value={values.region} onChange={(e) => setValues((v) => ({ ...v, region: e.target.value }))}>
-              {[...REGIONS, 'Other'].map((r) => <option key={r}>{r}</option>)}
-            </select>
+            <input id="region" className="field" placeholder="Type any region" autoComplete="off"
+              value={values.region ?? ''} onChange={(e) => setValues((v) => ({ ...v, region: e.target.value }))} />
           </div>
         </div>
         {error && <p role="alert" className="text-sm text-alert">{error}</p>}
