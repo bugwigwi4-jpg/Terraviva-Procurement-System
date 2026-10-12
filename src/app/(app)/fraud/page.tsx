@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import Attachments from '@/components/attachments';
 import PageHeader from '@/components/page-header';
 import FraudActions, { RunChecks } from './fraud-actions';
 import { createClient } from '@/lib/supabase/server';
@@ -35,6 +36,13 @@ export default async function FraudPage() {
               {HREF[f.entity_type] && <a className="text-sm font-semibold text-teal hover:underline" href={`${HREF[f.entity_type]}/${f.entity_id}`}>Open {label(f.entity_type).toLowerCase()}</a>}
             </div>
             <FraudActions id={f.id} status={f.status} />
+            <details className="w-full">
+              <summary className="cursor-pointer text-sm font-semibold text-teal">Evidence files</summary>
+              <div className="mt-3">
+                <Attachments entityType="fraud_flag" entityId={f.id} canUpload title="Evidence"
+                  categories={[{ value: 'general', label: 'Evidence document' }, { value: 'photo', label: 'Photo' }, { value: 'audio', label: 'Audio recording' }]} />
+              </div>
+            </details>
           </section>
         ))}
         {rows.length === 0 && <p className="rounded-lg border border-line bg-white p-8 text-center text-mute">No flags. Run the checks to scan the records.</p>}
