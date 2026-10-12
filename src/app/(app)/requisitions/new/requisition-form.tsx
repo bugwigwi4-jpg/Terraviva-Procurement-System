@@ -1,9 +1,11 @@
 'use client';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { CURRENCIES, MWANZA_DISTRICTS, PRIORITIES, REGIONS } from '@/lib/constants';
-import { formatMoney, label } from '@/lib/format';
+import { FILE_ACCEPT, categoryForFile, uploadAttachment } from '@/lib/attachments-client';
+import { CURRENCIES, PRIORITIES } from '@/lib/constants';
+import { formatBytes, formatMoney, label } from '@/lib/format';
 
 type Opt = { id: string; name: string; code?: string; currency?: string };
 type CatalogItem = { id: string; name: string; unit: string; reference_price: number | null };
@@ -18,10 +20,13 @@ export default function RequisitionForm({
   const supabase = useMemo(() => createClient(), []);
   const [form, setForm] = useState({
     title: '', department_id: defaultDepartment, program_id: '', budget_id: '', priority: 'normal',
-    needed_by: '', currency: 'TZS', delivery_region: 'Mwanza', delivery_district: '', delivery_address: '', justification: '',
+    needed_by: '', currency: 'TZS', delivery_region: '', delivery_district: '', delivery_address: '', justification: '',
   });
   const [lines, setLines] = useState<Line[]>([{ ...emptyLine }]);
+  const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [createdId, setCreatedId] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -36,6 +41,11 @@ export default function RequisitionForm({
     updateLine(i, { item_id: id, description: c.name, unit: c.unit, price: c.reference_price ? String(c.reference_price) : '' });
   }
 
+  const addFiles = (list: FileList | null) => {
+    if (!list) return;
+    setFiles((f) => [...f, ...Array.from(list)]);
+  };
+
   const total = lines.reduce((s, l) => s + (Number(l.quantity) || 0) * (Number(l.price) || 0), 0);
 
   async function onSubmit(e: React.FormEvent) {
@@ -46,6 +56,7 @@ export default function RequisitionForm({
     if (valid.some((l) => !(Number(l.quantity) > 0))) { setError('Every item needs a quantity above zero.'); return; }
 
     setBusy(true);
+    setStatus('Saving requisition...');
     const { data: req, error: e1 } = await supabase.from('requisitions').insert({
       title: form.title,
       department_id: form.department_id || null,
@@ -54,12 +65,12 @@ export default function RequisitionForm({
       priority: form.priority,
       needed_by: form.needed_by || null,
       currency: form.currency,
-      delivery_region: form.delivery_region || null,
-      delivery_district: form.delivery_district || null,
-      delivery_address: form.delivery_address || null,
+      delivery_region: form.delivery_region.trim() || null,
+      delivery_district: form.delivery_district.trim() || null,
+      delivery_address: form.delivery_address.trim() || null,
       justification: form.justification || null,
     }).select('id').single();
-    if (e1 || !req) { setError(e1?.message ?? 'Could not save the requisition.'); setBusy(false); return; }
+    if (e1 || !req) { setError(e1?.message ?? 'Could not save the requisition.'); setBusy(false); setStatus(null); return; }
 
     const { error: e2 } = await supabase.from('requisition_items').insert(
       valid.map((l, i) => ({
@@ -72,7 +83,26 @@ export default function RequisitionForm({
         sort_order: i,
       })),
     );
-    if (e2) { setError(`Saved the requisition, but items failed: ${e2.message}`); setBusy(false); router.push(`/requisitions/${req.id}`); return; }
+    if (e2) {
+      setCreatedId(req.id); setBusy(false); setStatus(null);
+      setError(`The requisition was saved, but its items failed: ${e2.message}`);
+      return;
+    }
+
+    const failed: string[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i];
+      setStatus(`Uploading file ${i + 1} of ${files.length}: ${f.name}`);
+      const res = await uploadAttachment(supabase, {
+        entityType: 'requisition', entityId: req.id, file: f, category: categoryForFile(f, 'specification'),
+      });
+      if (!res.ok) failed.push(`${f.name}: ${res.error}`);
+    }
+    if (failed.length > 0) {
+      setCreatedId(req.id); setBusy(false); setStatus(null);
+      setError(`The requisition was saved, but some files did not upload. ${failed.join(' | ')}`);
+      return;
+    }
     router.push(`/requisitions/${req.id}`);
   }
 
@@ -81,7 +111,7 @@ export default function RequisitionForm({
       <section className="grid gap-4 rounded-lg border border-line bg-white p-5 md:grid-cols-2">
         <div className="md:col-span-2">
           <label htmlFor="title" className="label">Title</label>
-          <input id="title" required className="field" value={form.title} onChange={set('title')} placeholder="e.g. Indigenous seedlings for Ilemela school clubs" />
+          <input id="title" required className="field" value={form.title} onChange={set('title')} placeholder="e.g. Indigenous seedlings for school clubs" />
         </div>
         <div>
           <label htmlFor="program" className="label">Program</label>
@@ -125,20 +155,11 @@ export default function RequisitionForm({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="region" className="label">Delivery region</label>
-            <select id="region" className="field" value={form.delivery_region} onChange={set('delivery_region')}>
-              {REGIONS.map((r) => <option key={r}>{r}</option>)}
-            </select>
+            <input id="region" className="field" value={form.delivery_region} onChange={set('delivery_region')} placeholder="Type any region" autoComplete="off" />
           </div>
           <div>
             <label htmlFor="district" className="label">District</label>
-            {form.delivery_region === 'Mwanza' ? (
-              <select id="district" className="field" value={form.delivery_district} onChange={set('delivery_district')}>
-                <option value="">Select district</option>
-                {MWANZA_DISTRICTS.map((d) => <option key={d}>{d}</option>)}
-              </select>
-            ) : (
-              <input id="district" className="field" value={form.delivery_district} onChange={set('delivery_district')} />
-            )}
+            <input id="district" className="field" value={form.delivery_district} onChange={set('delivery_district')} placeholder="Type any district" autoComplete="off" />
           </div>
         </div>
         <div className="md:col-span-2">
@@ -193,7 +214,42 @@ export default function RequisitionForm({
         <p className="num mt-4 text-right text-lg font-bold">Estimated total: {formatMoney(total, form.currency)}</p>
       </section>
 
-      {error && <p role="alert" className="text-sm text-alert">{error}</p>}
+      <section className="rounded-lg border border-line bg-white p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-bold">Attachments (optional)</h2>
+            <p className="text-sm text-mute">Specifications, supplier quotations, photos, video or audio. They upload when you save.</p>
+          </div>
+          <div className="flex gap-2">
+            <label className="btn btn-ghost">
+              Take photo
+              <input type="file" accept="image/*" capture="environment" hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ''; }} />
+            </label>
+            <label className="btn btn-ghost">
+              Add files
+              <input type="file" multiple accept={FILE_ACCEPT} hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ''; }} />
+            </label>
+          </div>
+        </div>
+        {files.length > 0 && (
+          <ul className="mt-4 divide-y divide-line rounded-md border border-line text-sm">
+            {files.map((f, i) => (
+              <li key={`${f.name}-${i}`} className="flex items-center justify-between gap-3 p-2.5">
+                <span className="truncate">{f.name} <span className="text-mute">({formatBytes(f.size)})</span></span>
+                <button type="button" className="font-semibold text-alert hover:underline" onClick={() => setFiles((fs) => fs.filter((_, idx) => idx !== i))}>Remove</button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {error && (
+        <div role="alert" className="text-sm text-alert">
+          <p>{error}</p>
+          {createdId && <p className="mt-2"><Link href={`/requisitions/${createdId}`} className="font-semibold text-teal hover:underline">Open the saved requisition</Link></p>}
+        </div>
+      )}
+      {status && <p role="status" className="text-sm text-mute">{status}</p>}
       <div className="flex gap-3">
         <button className="btn btn-primary" disabled={busy}>{busy ? 'Saving...' : 'Save as draft'}</button>
         <button type="button" className="btn btn-ghost" onClick={() => router.back()}>Cancel</button>
