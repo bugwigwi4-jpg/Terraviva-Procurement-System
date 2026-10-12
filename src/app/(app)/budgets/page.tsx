@@ -54,6 +54,7 @@ export default async function BudgetsPage() {
       <h2 className="mb-3 text-lg font-bold">Manage budget lines</h2>
       <ResourceManager
         table="budgets" noun="budget" rows={budgets.data ?? []} canEdit={can(ctx.roles, 'finance')} canDelete
+        attachments={{ entityType: 'budget', categories: [{ value: 'general', label: 'Approved budget document' }, { value: 'specification', label: 'Supporting calculation' }] }}
         fields={[
           { key: 'name', label: 'Name', required: true },
           { key: 'fiscal_year', label: 'Fiscal year', type: 'number', required: true, defaultValue: String(new Date().getFullYear()) },
