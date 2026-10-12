@@ -14,6 +14,7 @@ export default async function DonorsPage() {
       <PageHeader title="Donors" subtitle="Funders and partners whose grants pay for purchases." />
       <ResourceManager
         table="donors" noun="donor" rows={data ?? []} canEdit={can(ctx.roles, 'finance')}
+        attachments={{ entityType: 'donor', categories: [{ value: 'signed_contract', label: 'Agreement or MoU' }, { value: 'general', label: 'Other document' }] }}
         fields={[
           { key: 'name', label: 'Name', required: true },
           { key: 'contact_person', label: 'Contact person' },
