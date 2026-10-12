@@ -34,6 +34,7 @@ export default async function ReturnsPage() {
       <h2 className="mb-3 mt-10 text-lg font-bold">Credit notes</h2>
       <ResourceManager
         table="credit_notes" noun="credit note" rows={credits.data ?? []} canEdit={can(ctx.roles, 'finance')}
+        attachments={{ entityType: 'credit_note', categories: [{ value: 'general', label: 'Credit note document' }, { value: 'photo', label: 'Photo' }] }}
         fields={[
           { key: 'doc_number', label: 'Number', formHidden: true },
           { key: 'invoice_id', label: 'Invoice', type: 'select', required: true, options: toOptions(invoices.data, 'id', 'doc_number') },
